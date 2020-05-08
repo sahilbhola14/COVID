@@ -1,3 +1,9 @@
+#################################################
+#Developed by: Sahil Bhola			#
+#Contributor: Kishore Premkumar			#
+#Mail: sbhola@umich.edu				#
+#Please direct all your queries through mail	#
+#################################################
 import numpy as np
 from scipy.io import loadmat
 from scipy.optimize import minimize
@@ -9,8 +15,8 @@ import matplotlib.pyplot as plt
 
 # Dict(c): Cases: US(0),Italy(1),UK(2),Spain(3),Germany(4),Turkey(5),Austria(6),Australia(7),Norway(8),NZ(9),France(10),SK(11)
 # Dict(m): Model: SIR(0),SIRT(1)
-# cases_tot: [22-01-2020 to 18-04-2020]
-c = 1; #select country
+# cases_tot: [22-01-2020 to 5-05-2020]
+c = 11; #select country
 m = 1; #Model ID
 lambda1 = 0	#Regularization on Infected cases
 lambda2 = 1e-3 #Regularization on Recovered cases
@@ -44,9 +50,12 @@ def ODE_SIR(D):
 	return x
 
 def SIR(D):
-	global count
+	global count,f1
 	x = ODE_SIR(D)
 	MSE = LA.norm(np.log(x[t,1])-np.log(cases_I[t]))**2 + LA.norm(np.log(x[t,2])-np.log(cases_R[t]))**2 + lambda1*LA.norm(np.log(x[t,1]))**2+ lambda2*LA.norm(np.log(x[t,2]))**2
+	count+=1
+	f1.write('{0:.16f} {1:.16f}\n'.format(count,MSE))
+	print(MSE)
 
 	return (MSE)
 
@@ -100,6 +109,7 @@ def SIRT(D):
 	MSE = LA.norm(np.log(x[:,1])-np.log(cases_I[t]))**2 + LA.norm(np.log(x[:,2])-np.log(cases_R[t]))**2 + lambda1*LA.norm(np.log(x[:,1]))**2+ lambda2*LA.norm(np.log(x[:,2]))**2
 	count+=1
 	f1.write('{0:.16f} {1:.16f}\n'.format(count,MSE))
+	print(MSE)
 
 	return MSE
 
@@ -120,7 +130,7 @@ def optimize(D):
 	return res
 
 def main():
-	global population,cases_I,cases_R,t,Uo,count,tTrain
+	global population,cases_I,cases_R,t,Uo,count,tTrain,f1
 	count = 0
 	param = 0
 	for i in range(1,iLayers.shape[0]):
@@ -128,46 +138,45 @@ def main():
 		param = param + iLayers[i]
 	D = np.zeros(param + 2)	#Initial design variables
 	cases_I,cases_R,population = data(c)
-	#t = np.linspace(0,cases_I.shape[0]-1,cases_I.shape[0]).astype(int)
 	nTrain = int(tt*cases_I.shape[0])
 	t = np.linspace(0,cases_I.shape[0]-1,nTrain).astype(int)
+	t_predict = np.linspace(cases_I.shape[0],cases_I.shape[0]+31,30)
 	## IC and model selection
 	S = population*1e6; I = cases_I[0]; R = 10; T = 10;
 	## Select model
 	models = np.array([[S,I,R],[S,I,R,T]])
 	Uo = models[m]
 	## Optimizer
-	f1 = open('Residual_C'+str(c)+'_M_'+str(m)+'_tt_'+str(tt)+'.dat','w+')
-	f1.write('Vaiables = Iteration,MSE\n')
-	f1.write('ZONE T = GRID I = 1000 J = 1\n')
-	res = optimize(D)
-	f1.close()
+	with open('Residual_C_'+str(c)+'_M_'+str(m)+'_tt_'+str(tt)+'.dat','w+') as f1:
+		f1.write('Vaiables = Iteration,MSE\n')
+		f1.write('ZONE T = GRID I = 1000 J = 1\n')
+		res = optimize(D)
 
 	## Plotting
 	D = res.x
-	sio.savemat('DVar.mat',{'D':D})
+	sio.savemat('Dvariables_C_'+str(c)+'_M_'+str(m)+'_tt_'+str(tt)+'.mat',{'D':D})
 	if m==0:
+		t = np.linspace(0,100)
 		x = ODE_SIR(D)
 	elif m==1:
+		t = np.linspace(0,100)
 		x = ODE_SIRT(D)
 
 	S = x[:,0]; I = x[:,1]; R = x[:,2]; T = x[:,3]
 	plt.figure(1)
 	t_plot = np.linspace(0,cases_I.shape[0]-1,cases_I.shape[0]).astype(int)
-	#plt.plot(t,S, label = 'Cases Susceptible (Modelled)')
 	plt.plot(t,np.log(I), label = 'Cases Infected (Modelled)')
 	plt.plot(t,np.log(R), label = 'Cases Recovered (Modelled)')
 	plt.plot(t,np.log(T), label = 'Cases Quarantined (Modelled)')
 	plt.scatter(t_plot,np.log(cases_I), label = 'Cases infected (Actual)')
 	plt.scatter(t_plot,np.log(cases_R), label = 'Cases recovered (Actual)')
-	plt.legend(loc='bottom right')
-	plt.title('SIRT Model (Italy)')
+	plt.legend(loc='lower right')
+	plt.title('SIRT Model (South Korea)')
 	plt.yscale('log')
 	plt.xlabel('Days since outbreak')
 	plt.ylabel('Cases')
-	plt.show()
-	#plt.savefig('Test.png')
+	#plt.show()
+	plt.savefig('Plot_C_'+str(c)+'_M_'+str(m)+'_tt_'+str(tt)+'.png')
 
 if __name__=='__main__':
 	main()
-
