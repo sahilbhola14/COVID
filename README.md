@@ -21,5 +21,5 @@ version of SIRT to understand the dynamics of the problem with respect to optimi
 <p align="justify"> SIR(S - Susceptible,I - Infected ,R - Recovered) is a compartmental model in epidemiology that simplifies 
 the mathematical modelling of infectious disease spread. The SIR model is governed by the following ODE's:</p>
 <p align="center">
-<img src="https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Cpartial%20S%28t%29%29%7D%7B%5Cpartial%20t%7D%20%3D%20-%5Cfrac%7B%5Cbeta%20S%28t%29I%28t%29%7D%7BN%7D%5C%5C">
+<img src="https://latex.codecogs.com/gif.latex?%5Cbegin%7Barray%7D%7Brcl%7D%20%5Cfrac%7B%5Cpartial%20S%28t%29%29%7D%7B%5Cpartial%20t%7D%20%26%3D%26%20-%5Cfrac%7B%5Cbeta%20S%28t%29I%28t%29%7D%7BN%7D%5C%5C%20%5Cfrac%7B%5Cpartial%20I%28t%29%7D%7B%5Cpartial%20t%7D%20%26%3D%26%20%5Cfrac%7B%5Cbeta%20S%28t%29I%28t%29%7D%7BN%7D-%5Cgamma%20I%28t%29%5C%5C%20%5Cfrac%7B%5Cpartial%20R%28t%29%7D%7B%5Cpartial%20t%7D%20%26%3D%26%20%5Cgamma%20I%28t%29%20%5Cend%7Barray%7D">
  </p>
