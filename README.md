@@ -77,7 +77,7 @@ the mathematical modelling of infectious disease spread. The SIR model is govern
 
 <H2> References </H2>
 The study is an extension of the work carried out by Dandekar <i>et al.</i> in,<br>
-<p align="justify"><bi>Dandekar, R. and Barbastathis, G., 2020. Quantifying the effect of quarantine control in Covid-19 infectious spread using machine learning. medRxiv.</bi></p>
+<p align="justify"><i>Dandekar, R. and Barbastathis, G., 2020. Quantifying the effect of quarantine control in Covid-19 infectious spread using machine learning. medRxiv.</i></p>
 
 
  
